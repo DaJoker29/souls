@@ -1,0 +1,46 @@
+{
+  "name": "souls",
+  "version": "0.0.0",
+  "description": "A user management system",
+  "main": "souls.js",
+  "scripts": {
+    "lint": "eslint . --ext .js,.json",
+    "fix": "eslint --fix . --ext .js,.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preversion": "git checkout master && git merge --no-ff develop -m 'Pull changes for release bump'",
+    "postversion": "git push && git push --tags && git checkout develop && git merge --no-ff master -m 'Sync Develop branch' && git push",
+    "install": "ln -si ../../tools/pre-commit.sh .git/hooks/pre-commit",
+    "start": "pm2 start process.json",
+    "dev": "nodemon souls.js --config nodemon.json",
+    "dist": "./tools/upgrade.sh",
+    "reload": "./tools/reload-server.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DaJoker29/souls.git"
+  },
+  "author": "Dewitt Buckingham (http://zerodaedalus.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DaJoker29/souls/issues"
+  },
+  "homepage": "https://github.com/DaJoker29/souls#readme",
+  "dependencies": {
+    "body-parser": "1.15.2",
+    "eslint": "3.10.2",
+    "eslint-config-airbnb": "13.0.0",
+    "eslint-plugin-import": "2.2.0",
+    "eslint-plugin-json": "1.2.0",
+    "eslint-plugin-jsx-a11y": "2.2.3",
+    "eslint-plugin-react": "6.7.1",
+    "express": "4.14.0",
+    "express-session": "1.14.2",
+    "mongoose": "4.6.8",
+    "mongoose-findorcreate": "0.1.2",
+    "morgan": "1.7.0",
+    "nodemon": "1.11.0",
+    "passport": "0.3.2",
+    "passport-github2": "0.1.10",
+    "rand-token": "0.2.1"
+  }
+}
