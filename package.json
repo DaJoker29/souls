@@ -26,13 +26,16 @@
   },
   "homepage": "https://github.com/DaJoker29/souls#readme",
   "dependencies": {
+    "body-parser": "1.15.2",
     "eslint": "3.10.2",
     "eslint-config-airbnb": "13.0.0",
     "eslint-plugin-import": "2.2.0",
     "eslint-plugin-json": "1.2.0",
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-react": "6.7.1",
+    "express": "4.14.0",
     "mongoose": "4.6.8",
+    "morgan": "1.7.0",
     "nodemon": "1.11.0",
     "rand-token": "0.2.1"
   }
