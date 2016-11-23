@@ -39,3 +39,4 @@ jspm_packages
 # My ignores
 config.json
 process.json
+nodemon.json

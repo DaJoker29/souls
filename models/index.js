@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 const token = require('rand-token');
+const findOrCreate = require('mongoose-findorcreate');
 
 const Schema = mongoose.Schema;
 
 const soulSchema = new Schema({
-  displayName: { type: String, required: true, default: `soul-#${token.generate(7)}` },
+  displayName: { type: String, required: true, default: `soul-${token.generate(6, '0123456789')}` },
   createdOn: { type: Date, required: true, default: Date.now() },
   lastLogin: { type: Date, required: true, default: Date.now() },
   accounts: { type: Schema.Types.Mixed, required: true, default: {} },
 });
+
+soulSchema.plugin(findOrCreate);
 
 exports.soul = mongoose.model('soul', soulSchema);
