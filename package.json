@@ -32,6 +32,8 @@
     "eslint-plugin-json": "1.2.0",
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-react": "6.7.1",
-    "nodemon": "1.11.0"
+    "mongoose": "4.6.8",
+    "nodemon": "1.11.0",
+    "rand-token": "0.2.1"
   }
 }
