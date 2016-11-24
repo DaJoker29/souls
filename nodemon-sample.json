@@ -3,7 +3,9 @@
   "env": {
     "NODE_ENV": "development",
     "GITHUB_CLIENT_ID": "",
-    "GITHUB_CLIENT_SECRET": ""
+    "GITHUB_CLIENT_SECRET": "",
+    "GOOGLE_CLIENT_ID": "",
+    "GOOGLE_CLIENT_SECRET": ""
   },
   "ext": "js json",
   "ignore": [

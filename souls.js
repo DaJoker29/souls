@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const path = require('path');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const mongoose = require('mongoose');
 const session = require('express-session');
 const models = require('./models');
@@ -11,10 +12,17 @@ const models = require('./models');
 // Environment Variables
 const port = process.env.PORT || 1254;
 const sessionSecret = process.env.SESSION_SECRET || 'fuck santa';
+const env = process.env.NODE_ENV;
+
 const githubClientId = process.env.GITHUB_CLIENT_ID || '';
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET || '';
 const githubCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/github/callback`;
-const env = process.env.NODE_ENV;
+const githubParams = { scope: ['user'] };
+
+const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+const googleCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/google/callback`;
+const googleParams = { scope: ['profile'] };
 
 /**
  * Souls - Personalized Users
@@ -30,7 +38,15 @@ const ghStrategy = new GitHubStrategy({
   clientID: githubClientId,
   clientSecret: githubClientSecret,
   callbackURL: githubCbUrl,
-}, githubCb);
+  passReqToCallback: true,
+}, handleOAuth2);
+
+const googleStrategy = new GoogleStrategy({
+  clientID: googleClientId,
+  clientSecret: googleClientSecret,
+  callbackURL: googleCbUrl,
+  passReqToCallback: true,
+}, handleOAuth2);
 
 const app = express();
 
@@ -48,6 +64,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(ghStrategy);
+passport.use(googleStrategy);
 
 passport.serializeUser((user, done) => {
   done(null, user._id);
@@ -71,14 +88,31 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/', ensureAuth, (req, res) => {
-  res.sendStatus(200);
+  res.sendFile(path.join(`${__dirname}/templates/dashboard.html`));
 });
 
-app.get('/auth/github', passport.authenticate('github', { scope: ['user'] }));
+app.get('/connect/github', passport.authorize('github', githubParams));
+app.get('/connect/github/callback', passport.authorize('github', { failureRedirect: '/account' }));
+
+app.get('/connect/google', passport.authorize('google', googleParams));
+app.get('/connect/google/callback', passport.authorize('google', { failureRedirect: '/account' }));
+
+app.get('/auth/github', passport.authenticate('github', githubParams));
 app.get('/auth/github/callback', passport.authenticate('github', { 
   successRedirect: '/', 
   failureRedirect: '/login',
 }));
+
+app.get('/auth/google', passport.authenticate('google', googleParams));
+app.get('/auth/google/callback', passport.authenticate('google', { 
+  successRedirect: '/', 
+  failureRedirect: '/login',
+}));
+
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/login');
+});
 
 /**
  * Start
@@ -93,31 +127,54 @@ app.listen(port, () => {
  * Functions
  */
 
-function githubCb(accessToken, refreshToken, profile, done) {
-  const { id, username, displayName } = profile;
-  const { email } = profile._json;
+function handleOAuth2(req, accessToken, refreshToken, profile, done) {
+  const { provider } = profile;
 
-  const info = { id, username, displayName, email };
-  const query = { 'accounts.github.id': id };
-  const data = { displayName, accounts: { github: info } };
+  const props = {
+    lastUpdated: Date.now(),
+    accessToken,
+    refreshToken,
+  };
 
-  models.soul.findOrCreate(query, data, (err, user) => {
-    if (err) {
-      done(err, user);
-    }
+  const options = {
+    new: true,
+    upsert: true,
+  };
 
-    const update = {
-      lastLogin: Date.now(),
-      'accounts.github.accessToken': accessToken,
-    };
+  if (!req.user) {
+    // Not logged in.
+    const { displayName, id } = profile;
 
-    const options = {
-      new: true,
-      upsert: true,
-    };
+    const query = {};
+    query[`${provider}.id`] = id;
 
-    models.soul.findByIdAndUpdate(id, update, options, done);
-  });
+    // Find or Create
+    models.soul.findOne(query, (err, soul) => {
+      if (err) { done(err, soul); }
+
+      if (soul) {
+        // Update soul and return, if found
+        const update = {
+          lastLogin: Date.now(),
+        };
+        update[provider] = Object.assign(profile, props);
+
+        models.soul.findByIdAndUpdate(soul.id, update, options, done);
+      } else {
+        // Create new soul, if not found
+        const data = { displayName };
+        data[provider] = Object.assign(profile, props);
+
+        models.soul.create(data, done);
+      }
+    });
+  } else {
+    // Logged in
+    const update = {};
+    update[provider] = Object.assign(profile, props);
+
+    models.soul.findByIdAndUpdate(req.user.id, update, options, done);
+  }
 }
 
 function ensureAuth(req, res, next) {
