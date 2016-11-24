@@ -8,7 +8,8 @@ const soulSchema = new Schema({
   displayName: { type: String, required: true, default: `soul-${token.generate(6, '0123456789')}` },
   createdOn: { type: Date, required: true, default: Date.now() },
   lastLogin: { type: Date, required: true, default: Date.now() },
-  accounts: { type: Schema.Types.Mixed, required: true, default: {} },
+  google: { type: Schema.Types.Mixed, required: true },
+  github: { type: Schema.Types.Mixed },
 });
 
 soulSchema.plugin(findOrCreate);
