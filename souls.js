@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const path = require('path');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const mongoose = require('mongoose');
 const session = require('express-session');
 const models = require('./models');
@@ -15,6 +16,9 @@ const githubClientId = process.env.GITHUB_CLIENT_ID || '';
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET || '';
 const githubCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/github/callback`;
 const env = process.env.NODE_ENV;
+const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+const googleCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/google/callback`;
 
 /**
  * Souls - Personalized Users
@@ -32,6 +36,12 @@ const ghStrategy = new GitHubStrategy({
   callbackURL: githubCbUrl,
 }, githubCb);
 
+const googleStrategy = new GoogleStrategy({
+  clientID: googleClientId,
+  clientSecret: googleClientSecret,
+  callbackURL: googleCbUrl,
+}, googleCb);
+
 const app = express();
 
 mongoose.Promise = global.Promise;
@@ -48,6 +58,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(ghStrategy);
+passport.use(googleStrategy);
 
 passport.serializeUser((user, done) => {
   done(null, user._id);
@@ -76,6 +87,12 @@ app.get('/', ensureAuth, (req, res) => {
 
 app.get('/auth/github', passport.authenticate('github', { scope: ['user'] }));
 app.get('/auth/github/callback', passport.authenticate('github', { 
+  successRedirect: '/', 
+  failureRedirect: '/login',
+}));
+
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
+app.get('/auth/google/callback', passport.authenticate('google', { 
   successRedirect: '/', 
   failureRedirect: '/login',
 }));
@@ -117,6 +134,31 @@ function githubCb(accessToken, refreshToken, profile, done) {
     };
 
     models.soul.findByIdAndUpdate(id, update, options, done);
+  });
+}
+
+function googleCb(accessToken, refreshToken, profile, done) {
+  const { displayName, id } = profile;
+  const query = { 'google.id': id };
+  const data = { displayName, google: profile };
+
+  models.soul.findOrCreate(query, data, (err, user) => {
+    if (err) {
+      done(err, user);
+    }
+
+    const update = {
+      lastLogin: Date.now(),
+      'google.accessToken': accessToken,
+      'google.refreshToken': refreshToken,
+    };
+
+    const options = {
+      new: true,
+      upsert: true,
+    };
+
+    models.soul.findByIdAndUpdate(user.id, update, options, done);
   });
 }
 
