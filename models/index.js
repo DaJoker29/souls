@@ -8,7 +8,7 @@ const soulSchema = new Schema({
   displayName: { type: String, required: true, default: `soul-${token.generate(6, '0123456789')}` },
   createdOn: { type: Date, required: true, default: Date.now() },
   lastLogin: { type: Date, required: true, default: Date.now() },
-  google: { type: Schema.Types.Mixed, required: true },
+  google: { type: Schema.Types.Mixed },
   github: { type: Schema.Types.Mixed },
 });
 

@@ -12,13 +12,17 @@ const models = require('./models');
 // Environment Variables
 const port = process.env.PORT || 1254;
 const sessionSecret = process.env.SESSION_SECRET || 'fuck santa';
+const env = process.env.NODE_ENV;
+
 const githubClientId = process.env.GITHUB_CLIENT_ID || '';
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET || '';
 const githubCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/github/callback`;
-const env = process.env.NODE_ENV;
+const githubParams = { scope: ['user'] };
+
 const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
 const googleCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/google/callback`;
+const googleParams = { scope: ['profile'] };
 
 /**
  * Souls - Personalized Users
@@ -34,12 +38,14 @@ const ghStrategy = new GitHubStrategy({
   clientID: githubClientId,
   clientSecret: githubClientSecret,
   callbackURL: githubCbUrl,
+  passReqToCallback: true,
 }, githubCb);
 
 const googleStrategy = new GoogleStrategy({
   clientID: googleClientId,
   clientSecret: googleClientSecret,
   callbackURL: googleCbUrl,
+  passReqToCallback: true,
 }, googleCb);
 
 const app = express();
@@ -82,16 +88,22 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/', ensureAuth, (req, res) => {
-  res.sendStatus(200);
+  res.sendFile(path.join(`${__dirname}/templates/dashboard.html`));
 });
 
-app.get('/auth/github', passport.authenticate('github', { scope: ['user'] }));
+app.get('/connect/github', passport.authorize('github', githubParams));
+app.get('/connect/github/callback', passport.authorize('github', { failureRedirect: '/account' }));
+
+app.get('/connect/google', passport.authorize('google', googleParams));
+app.get('/connect/google/callback', passport.authorize('google', { failureRedirect: '/account' }));
+
+app.get('/auth/github', passport.authenticate('github', githubParams));
 app.get('/auth/github/callback', passport.authenticate('github', { 
   successRedirect: '/', 
   failureRedirect: '/login',
 }));
 
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
+app.get('/auth/google', passport.authenticate('google', googleParams));
 app.get('/auth/google/callback', passport.authenticate('google', { 
   successRedirect: '/', 
   failureRedirect: '/login',
@@ -110,47 +122,36 @@ app.listen(port, () => {
  * Functions
  */
 
-function githubCb(accessToken, refreshToken, profile, done) {
-  const { id, username, displayName } = profile;
-  const { email } = profile._json;
+function githubCb(req, accessToken, refreshToken, profile, done) {
+  const { user } = req;
+  if (!user) {
+    // Not logged in. Authenticate via Github
+    const { displayName, id } = profile;
+    const query = { 'github.id': id };
+    const data = { displayName, github: profile };
 
-  const info = { id, username, displayName, email };
-  const query = { 'accounts.github.id': id };
-  const data = { displayName, accounts: { github: info } };
+    models.soul.findOrCreate(query, data, (err, soul) => {
+      if (err) {
+        done(err, soul);
+      }
 
-  models.soul.findOrCreate(query, data, (err, user) => {
-    if (err) {
-      done(err, user);
-    }
+      const update = {
+        lastLogin: Date.now(),
+        'github.accessToken': accessToken,
+        'github.refreshToken': refreshToken,
+      };
 
+      const options = {
+        new: true,
+        upsert: true,
+      };
+
+      models.soul.findByIdAndUpdate(soul.id, update, options, done);
+    });
+  } else if (user && !user.github) {
+    // Logged in and Github not connection
     const update = {
-      lastLogin: Date.now(),
-      'accounts.github.accessToken': accessToken,
-    };
-
-    const options = {
-      new: true,
-      upsert: true,
-    };
-
-    models.soul.findByIdAndUpdate(id, update, options, done);
-  });
-}
-
-function googleCb(accessToken, refreshToken, profile, done) {
-  const { displayName, id } = profile;
-  const query = { 'google.id': id };
-  const data = { displayName, google: profile };
-
-  models.soul.findOrCreate(query, data, (err, user) => {
-    if (err) {
-      done(err, user);
-    }
-
-    const update = {
-      lastLogin: Date.now(),
-      'google.accessToken': accessToken,
-      'google.refreshToken': refreshToken,
+      github: profile,
     };
 
     const options = {
@@ -159,7 +160,54 @@ function googleCb(accessToken, refreshToken, profile, done) {
     };
 
     models.soul.findByIdAndUpdate(user.id, update, options, done);
-  });
+  } else {
+    // Logged in and GitHub already connected.
+    done(null, req.user);
+  }
+}
+
+function googleCb(req, accessToken, refreshToken, profile, done) {
+  const { user } = req;
+  if (!user) {
+    // Not logged in. Authenticate via Github
+    const { displayName, id } = profile;
+    const query = { 'google.id': id };
+    const data = { displayName, google: profile };
+
+    models.soul.findOrCreate(query, data, (err, soul) => {
+      if (err) {
+        done(err, soul);
+      }
+
+      const update = {
+        lastLogin: Date.now(),
+        'google.accessToken': accessToken,
+        'google.refreshToken': refreshToken,
+      };
+
+      const options = {
+        new: true,
+        upsert: true,
+      };
+
+      models.soul.findByIdAndUpdate(soul.id, update, options, done);
+    });
+  } else if (user && !user.google) {
+    // Logged in and Github not connection
+    const update = {
+      google: profile,
+    };
+
+    const options = {
+      new: true,
+      upsert: true,
+    };
+
+    models.soul.findByIdAndUpdate(user.id, update, options, done);
+  } else {
+    // Logged in and GitHub already connected.
+    done(null, req.user);
+  }
 }
 
 function ensureAuth(req, res, next) {
