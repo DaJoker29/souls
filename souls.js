@@ -39,14 +39,14 @@ const ghStrategy = new GitHubStrategy({
   clientSecret: githubClientSecret,
   callbackURL: githubCbUrl,
   passReqToCallback: true,
-}, githubCb);
+}, handleOAuth2);
 
 const googleStrategy = new GoogleStrategy({
   clientID: googleClientId,
   clientSecret: googleClientSecret,
   callbackURL: googleCbUrl,
   passReqToCallback: true,
-}, googleCb);
+}, handleOAuth2);
 
 const app = express();
 
@@ -109,6 +109,11 @@ app.get('/auth/google/callback', passport.authenticate('google', {
   failureRedirect: '/login',
 }));
 
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/login');
+});
+
 /**
  * Start
  */
@@ -122,91 +127,53 @@ app.listen(port, () => {
  * Functions
  */
 
-function githubCb(req, accessToken, refreshToken, profile, done) {
-  const { user } = req;
-  if (!user) {
-    // Not logged in. Authenticate via Github
+function handleOAuth2(req, accessToken, refreshToken, profile, done) {
+  const { provider } = profile;
+
+  const props = {
+    lastUpdated: Date.now(),
+    accessToken,
+    refreshToken,
+  };
+
+  const options = {
+    new: true,
+    upsert: true,
+  };
+
+  if (!req.user) {
+    // Not logged in.
     const { displayName, id } = profile;
-    const query = { 'github.id': id };
-    const data = { displayName, github: profile };
 
-    models.soul.findOrCreate(query, data, (err, soul) => {
-      if (err) {
-        done(err, soul);
+    const query = {};
+    query[`${provider}.id`] = id;
+
+    // Find or Create
+    models.soul.findOne(query, (err, soul) => {
+      if (err) { done(err, soul); }
+
+      if (soul) {
+        // Update soul and return, if found
+        const update = {
+          lastLogin: Date.now(),
+        };
+        update[provider] = Object.assign(profile, props);
+
+        models.soul.findByIdAndUpdate(soul.id, update, options, done);
+      } else {
+        // Create new soul, if not found
+        const data = { displayName };
+        data[provider] = Object.assign(profile, props);
+
+        models.soul.create(data, done);
       }
-
-      const update = {
-        lastLogin: Date.now(),
-        'github.accessToken': accessToken,
-        'github.refreshToken': refreshToken,
-      };
-
-      const options = {
-        new: true,
-        upsert: true,
-      };
-
-      models.soul.findByIdAndUpdate(soul.id, update, options, done);
     });
-  } else if (user && !user.github) {
-    // Logged in and Github not connection
-    const update = {
-      github: profile,
-    };
-
-    const options = {
-      new: true,
-      upsert: true,
-    };
-
-    models.soul.findByIdAndUpdate(user.id, update, options, done);
   } else {
-    // Logged in and GitHub already connected.
-    done(null, req.user);
-  }
-}
+    // Logged in
+    const update = {};
+    update[provider] = Object.assign(profile, props);
 
-function googleCb(req, accessToken, refreshToken, profile, done) {
-  const { user } = req;
-  if (!user) {
-    // Not logged in. Authenticate via Github
-    const { displayName, id } = profile;
-    const query = { 'google.id': id };
-    const data = { displayName, google: profile };
-
-    models.soul.findOrCreate(query, data, (err, soul) => {
-      if (err) {
-        done(err, soul);
-      }
-
-      const update = {
-        lastLogin: Date.now(),
-        'google.accessToken': accessToken,
-        'google.refreshToken': refreshToken,
-      };
-
-      const options = {
-        new: true,
-        upsert: true,
-      };
-
-      models.soul.findByIdAndUpdate(soul.id, update, options, done);
-    });
-  } else if (user && !user.google) {
-    // Logged in and Github not connection
-    const update = {
-      google: profile,
-    };
-
-    const options = {
-      new: true,
-      upsert: true,
-    };
-
-    models.soul.findByIdAndUpdate(user.id, update, options, done);
-  } else {
-    // Logged in and GitHub already connected.
-    done(null, req.user);
+    models.soul.findByIdAndUpdate(req.user.id, update, options, done);
   }
 }
 
