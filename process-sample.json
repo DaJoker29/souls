@@ -4,8 +4,14 @@
     "script": "./souls.js",
     "watch": false,
     "env": {
-      "NODE_ENV": "production"
+      "NODE_ENV": "production",
+      "GITHUB_CLIENT_ID": "",
+      "GITHUB_CLIENT_SECRET": "",
+      "GOOGLE_CLIENT_ID": "",
+      "GOOGLE_CLIENT_SECRET": ""
     },
-    "log_date_format": "YYYY-MM-DD HH:mm:ss.SSSS Z"
+    "log_date_format": "YYYY-MM-DD HH:mm:ss.SSSS Z",
+    "instances": "max",
+    "exec_mode": "cluster"
   }]
 }

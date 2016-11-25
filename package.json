@@ -27,6 +27,7 @@
   "homepage": "https://github.com/DaJoker29/souls#readme",
   "dependencies": {
     "body-parser": "1.15.2",
+    "connect-redis": "3.1.0",
     "debug": "https://registry.npmjs.org/debug/-/debug-2.3.3.tgz",
     "eslint": "3.10.2",
     "eslint-config-airbnb": "13.0.0",
