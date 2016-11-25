@@ -5,6 +5,8 @@ const path = require('path');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const TwitterStrategy = require('passport-twitter').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const mongoose = require('mongoose');
 const session = require('express-session');
 const helmet = require('helmet');
@@ -27,6 +29,15 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
 const googleCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/google/callback`;
 const googleParams = { scope: ['profile'] };
 
+const twitterConsumerKey = process.env.TWITTER_CONSUMER_KEY || '';
+const twitterConsumerSecret = process.env.TWITTER_CONSUMER_SECRET || '';
+const twitterCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/twitter/callback`;
+
+const facebookAppId = process.env.FACEBOOK_APP_ID || '';
+const facebookAppSecret = process.env.FACEBOOK_APP_SECRET || '';
+const facebookCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/facebook/callback`;
+const facebookParams = { authType: 'rerequest', scope: ['user_friends', 'email', 'public_profile'] };
+
 /**
  * Souls - Personalized Users
  * @module  souls
@@ -42,14 +53,29 @@ const ghStrategy = new GitHubStrategy({
   clientSecret: githubClientSecret,
   callbackURL: githubCbUrl,
   passReqToCallback: true,
-}, handleOAuth2);
+}, handleOAuth);
 
 const googleStrategy = new GoogleStrategy({
   clientID: googleClientId,
   clientSecret: googleClientSecret,
   callbackURL: googleCbUrl,
   passReqToCallback: true,
-}, handleOAuth2);
+}, handleOAuth);
+
+const twitterStrategy = new TwitterStrategy({
+  consumerKey: twitterConsumerKey,
+  consumerSecret: twitterConsumerSecret,
+  callbackURL: twitterCbUrl,
+  passReqToCallback: true,
+}, handleOAuth);
+
+const facebookStrategy = new FacebookStrategy({
+  clientID: facebookAppId,
+  clientSecret: facebookAppSecret,
+  callbackURL: facebookCbUrl,
+  passReqToCallback: true,
+  profileFields: ['id', 'displayName', 'email', 'birthday', 'friends', 'first_name', 'last_name', 'middle_name', 'gender', 'link'],
+}, handleOAuth);
 
 const app = express();
 
@@ -70,6 +96,8 @@ app.use(passport.session());
 
 passport.use(ghStrategy);
 passport.use(googleStrategy);
+passport.use(twitterStrategy);
+passport.use(facebookStrategy);
 
 passport.serializeUser((user, done) => {
   done(null, user._id);
@@ -81,7 +109,7 @@ passport.deserializeUser((id, done) => {
 });
 
 /**
- * Routes
+ * Special Routes
  */
 
 app.get('/login', (req, res) => {
@@ -96,14 +124,45 @@ app.get('/', ensureAuth, (req, res) => {
   res.sendFile(path.join(`${__dirname}/templates/dashboard.html`));
 });
 
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/login');
+});
+
+/**
+ * Authorization Routes
+ */
+
 app.get('/connect/github', passport.authorize('github', githubParams));
 app.get('/connect/github/callback', passport.authorize('github', { failureRedirect: '/account' }));
+
+app.get('/connect/twitter', passport.authorize('twitter'));
+app.get('/connect/twitter/callback', passport.authorize('twitter', { failureRedirect: '/account' }));
+
+app.get('/connect/facebook', passport.authorize('facebook', facebookParams));
+app.get('/connect/facebook/callback', passport.authorize('facebook', { failureRedirect: '/account' }));
 
 app.get('/connect/google', passport.authorize('google', googleParams));
 app.get('/connect/google/callback', passport.authorize('google', { failureRedirect: '/account' }));
 
+/**
+ * Authentication Routes
+ */
+
 app.get('/auth/github', passport.authenticate('github', githubParams));
 app.get('/auth/github/callback', passport.authenticate('github', { 
+  successRedirect: '/', 
+  failureRedirect: '/login',
+}));
+
+app.get('/auth/twitter', passport.authenticate('twitter'));
+app.get('/auth/twitter/callback', passport.authenticate('twitter', { 
+  successRedirect: '/', 
+  failureRedirect: '/login',
+}));
+
+app.get('/auth/facebook', passport.authenticate('facebook', facebookParams));
+app.get('/auth/facebook/callback', passport.authenticate('facebook', { 
   successRedirect: '/', 
   failureRedirect: '/login',
 }));
@@ -113,11 +172,6 @@ app.get('/auth/google/callback', passport.authenticate('google', {
   successRedirect: '/', 
   failureRedirect: '/login',
 }));
-
-app.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/login');
-});
 
 /**
  * Start
@@ -132,14 +186,21 @@ app.listen(port, () => {
  * Functions
  */
 
-function handleOAuth2(req, accessToken, refreshToken, profile, done) {
+function handleOAuth(req, accessToken, refreshToken, profile, done) {
   const { provider } = profile;
 
   const props = {
     lastUpdated: Date.now(),
-    accessToken,
-    refreshToken,
   };
+
+  if ('twitter' === provider) {
+    // Handle different OAuth1a signature
+    props.token = accessToken;
+    props.tokenSecret = refreshToken;
+  } else {
+    props.accessToken = accessToken;
+    props.refreshToken = refreshToken;
+  }
 
   const options = {
     new: true,
