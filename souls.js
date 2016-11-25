@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const helmet = require('helmet');
 const debug = require('debug')('souls');
+const RedisStore = require('connect-redis')(session);
 const models = require('./models');
 
 // Environment Variables
@@ -62,6 +63,7 @@ app.use(session({
   resave: false,
   secret: sessionSecret,
   saveUninitialized: false,
+  store: new RedisStore({ host: 'localhost', port: 6379 }),
 }));
 app.use(passport.initialize());
 app.use(passport.session());
