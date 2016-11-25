@@ -7,6 +7,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const mongoose = require('mongoose');
 const session = require('express-session');
+const debug = require('debug')('souls');
 const models = require('./models');
 
 // Environment Variables
@@ -120,7 +121,7 @@ app.get('/logout', (req, res) => {
 
 mongoose.connect('mongodb://localhost/souls');
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+  debug(`Listening on port ${port}`);
 });
 
 /**
