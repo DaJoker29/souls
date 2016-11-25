@@ -5,6 +5,7 @@ const path = require('path');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const TwitterStrategy = require('passport-twitter').Strategy;
 const mongoose = require('mongoose');
 const session = require('express-session');
 const helmet = require('helmet');
@@ -27,6 +28,10 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
 const googleCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/google/callback`;
 const googleParams = { scope: ['profile'] };
 
+const twitterConsumerKey = process.env.TWITTER_CONSUMER_KEY || '';
+const twitterConsumerSecret = process.env.TWITTER_CONSUMER_SECRET || '';
+const twitterCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/twitter/callback`;
+
 /**
  * Souls - Personalized Users
  * @module  souls
@@ -42,14 +47,21 @@ const ghStrategy = new GitHubStrategy({
   clientSecret: githubClientSecret,
   callbackURL: githubCbUrl,
   passReqToCallback: true,
-}, handleOAuth2);
+}, handleOAuth);
 
 const googleStrategy = new GoogleStrategy({
   clientID: googleClientId,
   clientSecret: googleClientSecret,
   callbackURL: googleCbUrl,
   passReqToCallback: true,
-}, handleOAuth2);
+}, handleOAuth);
+
+const twitterStrategy = new TwitterStrategy({
+  consumerKey: twitterConsumerKey,
+  consumerSecret: twitterConsumerSecret,
+  callbackURL: twitterCbUrl,
+  passReqToCallback: true,
+}, handleOAuth);
 
 const app = express();
 
@@ -70,6 +82,7 @@ app.use(passport.session());
 
 passport.use(ghStrategy);
 passport.use(googleStrategy);
+passport.use(twitterStrategy);
 
 passport.serializeUser((user, done) => {
   done(null, user._id);
@@ -99,11 +112,20 @@ app.get('/', ensureAuth, (req, res) => {
 app.get('/connect/github', passport.authorize('github', githubParams));
 app.get('/connect/github/callback', passport.authorize('github', { failureRedirect: '/account' }));
 
+app.get('/connect/twitter', passport.authorize('twitter'));
+app.get('/connect/twitter/callback', passport.authorize('twitter', { failureRedirect: '/account' }));
+
 app.get('/connect/google', passport.authorize('google', googleParams));
 app.get('/connect/google/callback', passport.authorize('google', { failureRedirect: '/account' }));
 
 app.get('/auth/github', passport.authenticate('github', githubParams));
 app.get('/auth/github/callback', passport.authenticate('github', { 
+  successRedirect: '/', 
+  failureRedirect: '/login',
+}));
+
+app.get('/auth/twitter', passport.authenticate('twitter'));
+app.get('/auth/twitter/callback', passport.authenticate('twitter', { 
   successRedirect: '/', 
   failureRedirect: '/login',
 }));
@@ -132,14 +154,22 @@ app.listen(port, () => {
  * Functions
  */
 
-function handleOAuth2(req, accessToken, refreshToken, profile, done) {
+
+function handleOAuth(req, accessToken, refreshToken, profile, done) {
   const { provider } = profile;
 
   const props = {
     lastUpdated: Date.now(),
-    accessToken,
-    refreshToken,
   };
+
+  if ('twitter' === provider) {
+    // Handle different OAuth1a signature
+    props.token = accessToken;
+    props.tokenSecret = refreshToken;
+  } else {
+    props.accessToken = accessToken;
+    props.refreshToken = refreshToken;
+  }
 
   const options = {
     new: true,
