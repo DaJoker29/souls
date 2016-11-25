@@ -11,6 +11,7 @@ const soulSchema = new Schema({
   google: { type: Schema.Types.Mixed },
   github: { type: Schema.Types.Mixed },
   twitter: { type: Schema.Types.Mixed },
+  facebook: { type: Schema.Types.Mixed },
 });
 
 soulSchema.plugin(findOrCreate);
