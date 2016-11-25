@@ -7,6 +7,8 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const mongoose = require('mongoose');
 const session = require('express-session');
+const helmet = require('helmet');
+const debug = require('debug')('souls');
 const models = require('./models');
 
 // Environment Variables
@@ -55,6 +57,7 @@ mongoose.Promise = global.Promise;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('development' === env ? 'dev' : 'combined'));
+app.use(helmet());
 app.use(session({
   resave: false,
   secret: sessionSecret,
@@ -120,7 +123,7 @@ app.get('/logout', (req, res) => {
 
 mongoose.connect('mongodb://localhost/souls');
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+  debug(`Listening on port ${port}`);
 });
 
 /**
