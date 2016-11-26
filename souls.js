@@ -83,6 +83,7 @@ mongoose.Promise = global.Promise;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('development' === env ? 'dev' : 'combined'));
 app.use(helmet());
 app.use(session({
