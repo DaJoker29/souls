@@ -129,6 +129,10 @@ app.get('/logout', (req, res) => {
   res.redirect('/login');
 });
 
+app.get('/profile', ensureAuth, (req, res) => {
+  res.json(req.user);
+});
+
 /**
  * Authorization Routes
  */
