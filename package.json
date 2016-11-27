@@ -37,6 +37,8 @@
     "debug": "https://registry.npmjs.org/debug/-/debug-2.3.3.tgz",
     "eslint": "3.10.2",
     "eslint-config-airbnb": "13.0.0",
+    "eslint-config-angular": "0.5.0",
+    "eslint-plugin-angular": "1.4.1",
     "eslint-plugin-import": "2.2.0",
     "eslint-plugin-json": "1.2.0",
     "eslint-plugin-jsx-a11y": "2.2.3",
