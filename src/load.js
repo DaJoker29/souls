@@ -90,6 +90,26 @@ $(() => {
         .removeClass('btn-lg')
         .find('span')
         .text('Connected');
+
+      $('.card-deck')
+        .append('<div class="card"></div>')
+        .find('.card:last-child')
+        .addClass('card')
+        .append('<div class="card-block"></div>')
+        .find('.card-block')
+        .append('<h4 class="card-title"><i class="fa fa-twitter"></i> Twitter</h4>')
+        .append(`<h6 class="card-subtitle text-muted">Last updated ${moment(twitter.lastUpdated).fromNow()}</h6>`)
+        .closest('.card')
+        .append('<div class="card-block"></div>')
+        .find('.card-block')
+        .last()
+        .append('<p class="card-text"></p>')
+        .find('.card-text')
+        .append(`<span><a href="${twitter._json.url}"><b>@${twitter._json.screen_name} (${twitter._json.name})</b></a></span><br />`)
+        .append(`<span>${twitter._json.description} Tweets</span><br />`)
+        .append(`<span>${twitter._json.statuses_count} Tweets</span><br />`)
+        .append(`<span>${twitter._json.followers_count} Followers</span><br />`)
+        .append(`<span>Joined ${moment(twitter._json.created_at).fromNow()}</span><br />`);
     }
   });
 });
