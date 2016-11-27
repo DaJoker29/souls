@@ -40,3 +40,4 @@ jspm_packages
 config.json
 process.json
 nodemon.json
+public

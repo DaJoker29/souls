@@ -83,6 +83,8 @@ mongoose.Promise = global.Promise;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(morgan('development' === env ? 'dev' : 'combined'));
 app.use(helmet());
 app.use(session({
@@ -127,6 +129,31 @@ app.get('/', ensureAuth, (req, res) => {
 app.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/login');
+});
+
+app.get('/profile', ensureAuth, (req, res) => {
+  res.json(req.user);
+});
+
+app.get('/disconnect/:provider', ensureAuth, (req, res) => {
+  const provider = req.params.provider;
+  debug(provider);
+
+  if (provider && {} !== provider && 'google' !== provider) {
+    models.soul.findById(req.user.id, (err, soul) => {
+      if (soul) {
+        soul[provider] = undefined; // eslint-disable-line no-param-reassign
+        soul.save((err) => {
+          if (err) {
+            console.error(err);
+          }
+        });
+      } else {
+        debug('object returned');
+      }
+    });
+  }
+  res.redirect('/');
 });
 
 /**
