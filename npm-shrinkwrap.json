@@ -848,6 +848,11 @@
       "from": "eslint-config-airbnb-base@>=10.0.0 <11.0.0",
       "resolved": "https://registry.npmjs.org/eslint-config-airbnb-base/-/eslint-config-airbnb-base-10.0.1.tgz"
     },
+    "eslint-config-angular": {
+      "version": "0.5.0",
+      "from": "eslint-config-angular@latest",
+      "resolved": "https://registry.npmjs.org/eslint-config-angular/-/eslint-config-angular-0.5.0.tgz"
+    },
     "eslint-import-resolver-node": {
       "version": "0.2.3",
       "from": "eslint-import-resolver-node@>=0.2.0 <0.3.0",
@@ -869,6 +874,11 @@
           "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.1.tgz"
         }
       }
+    },
+    "eslint-plugin-angular": {
+      "version": "1.4.1",
+      "from": "eslint-plugin-angular@latest",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-angular/-/eslint-plugin-angular-1.4.1.tgz"
     },
     "eslint-plugin-import": {
       "version": "2.2.0",

@@ -1,0 +1,1 @@
+angular.module('souls').factory('moment', $window => $window.moment);

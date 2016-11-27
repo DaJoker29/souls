@@ -142,7 +142,7 @@ app.get('/disconnect/:provider', ensureAuth, (req, res) => {
   if (provider && {} !== provider && 'google' !== provider) {
     models.soul.findById(req.user.id, (err, soul) => {
       if (soul) {
-        soul[provider] = undefined; // eslint-disable-line no-param-reassign
+        soul.accounts[provider] = undefined; // eslint-disable-line no-param-reassign
         soul.save((err) => {
           if (err) {
             console.error(err);
@@ -239,7 +239,7 @@ function handleOAuth(req, accessToken, refreshToken, profile, done) {
     const { displayName, id } = profile;
 
     const query = {};
-    query[`${provider}.id`] = id;
+    query[`accounts.${provider}.id`] = id;
 
     // Find or Create
     models.soul.findOne(query, (err, soul) => {
@@ -249,22 +249,28 @@ function handleOAuth(req, accessToken, refreshToken, profile, done) {
         // Update soul and return, if found
         const update = {
           lastLogin: Date.now(),
+          accounts: soul.accounts,
         };
-        update[provider] = Object.assign(profile, props);
+        update.accounts[provider] = Object.assign(profile, props);
 
         models.soul.findByIdAndUpdate(soul.id, update, options, done);
       } else {
         // Create new soul, if not found
-        const data = { displayName };
-        data[provider] = Object.assign(profile, props);
+        const data = {
+          displayName,
+          accounts: {},
+        };
+        data.accounts[provider] = Object.assign(profile, props);
 
         models.soul.create(data, done);
       }
     });
   } else {
     // Logged in
-    const update = {};
-    update[provider] = Object.assign(profile, props);
+    const update = {
+      accounts: req.user.accounts,
+    };
+    update.accounts[provider] = Object.assign(profile, props);
 
     models.soul.findByIdAndUpdate(req.user.id, update, options, done);
   }
