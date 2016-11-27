@@ -5,14 +5,16 @@ $(() => {
     const { github, google, facebook, twitter } = user;
 
     if (github) {
-      // Disable Link
       $('#connectGithub')
-        .addClass('disabled')
-        .removeClass('btn-lg')
+        .addClass('btn-success')
+        .removeClass('btn-info')
         .find('span')
-        .text('Connected');
+        .text('Update');
 
-      $('.card-deck')
+      $('#disconnectGithub')
+        .removeClass('hidden-xs-up');
+
+      $('.card-columns')
         .append('<div class="card"></div>')
         .find('.card:last-child')
         .addClass('card')
@@ -34,12 +36,15 @@ $(() => {
 
     if (google) {
       $('#connectGoogle')
-        .addClass('disabled')
-        .removeClass('btn-lg')
+        .addClass('btn-success')
+        .removeClass('btn-info')
         .find('span')
-        .text('Connected');
+        .text('Update');
 
-      $('.card-deck')
+      $('#disconnectGoogle')
+        .removeClass('hidden-xs-up');
+
+      $('.card-columns')
         .append('<div class="card"></div>')
         .find('.card:last-child')
         .addClass('card')
@@ -60,12 +65,15 @@ $(() => {
 
     if (facebook) {
       $('#connectFacebook')
-        .addClass('disabled')
-        .removeClass('btn-lg')
+        .addClass('btn-success')
+        .removeClass('btn-info')
         .find('span')
-        .text('Connected');
+        .text('Update');
 
-      $('.card-deck')
+      $('#disconnectFacebook')
+        .removeClass('hidden-xs-up');
+
+      $('.card-columns')
         .append('<div class="card"></div>')
         .find('.card:last-child')
         .addClass('card')
@@ -86,12 +94,15 @@ $(() => {
 
     if (twitter) {
       $('#connectTwitter')
-        .addClass('disabled')
-        .removeClass('btn-lg')
+        .addClass('btn-success')
+        .removeClass('btn-info')
         .find('span')
-        .text('Connected');
+        .text('Update');
 
-      $('.card-deck')
+      $('#disconnectTwitter')
+        .removeClass('hidden-xs-up');
+
+      $('.card-columns')
         .append('<div class="card"></div>')
         .find('.card:last-child')
         .addClass('card')

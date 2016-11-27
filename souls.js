@@ -134,6 +134,27 @@ app.get('/profile', ensureAuth, (req, res) => {
   res.json(req.user);
 });
 
+app.get('/disconnect/:provider', ensureAuth, (req, res) => {
+  const provider = req.params.provider;
+  debug(provider);
+
+  if (provider && {} !== provider) {
+    models.soul.findById(req.user.id, (err, soul) => {
+      if (soul) {
+        soul[provider] = undefined; // eslint-disable-line no-param-reassign
+        soul.save((err) => {
+          if (err) {
+            console.error(err);
+          }
+        });
+      } else {
+        debug('object returned');
+      }
+    });
+  }
+  res.redirect('/');
+});
+
 /**
  * Authorization Routes
  */
