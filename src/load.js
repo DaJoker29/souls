@@ -64,6 +64,24 @@ $(() => {
         .removeClass('btn-lg')
         .find('span')
         .text('Connected');
+
+      $('.card-deck')
+        .append('<div class="card"></div>')
+        .find('.card:last-child')
+        .addClass('card')
+        .append('<div class="card-block"></div>')
+        .find('.card-block')
+        .append('<h4 class="card-title"><i class="fa fa-facebook"></i> Facebook</h4>')
+        .append(`<h6 class="card-subtitle text-muted">Last updated ${moment(facebook.lastUpdated).fromNow()}</h6>`)
+        .closest('.card')
+        .append('<div class="card-block"></div>')
+        .find('.card-block')
+        .last()
+        .append('<p class="card-text"></p>')
+        .find('.card-text')
+        .append(`<span><a href="${facebook.profileUrl}"><b>${facebook.displayName}</b></a></span><br />`)
+        .append(`<span>${facebook._json.friends.summary.total_count} Friends</span><br />`)
+        .append(`<span>${facebook._json.gender}</span><br />`);
     }
 
     if (twitter) {
