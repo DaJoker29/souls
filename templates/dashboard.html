@@ -11,24 +11,56 @@
 <body>
   <!-- Start of content -->
   <div class="container jumbotron">
-    <h1 class="display-3">Signed In!</h1>
-    <p class="lead">Please link the following accounts.</p>
-    <p>
-        <a id="connectGoogle" href="connect/google" type="button" class="btn btn-info"><i class="fa fa-google"></i> <span>Google</span></a>
-        <a id="connectGithub" href="connect/github" type="button" class="btn btn-info"><i class="fa fa-github"></i> <span>Github</span></a>
-        <a id="connectTwitter" href="connect/twitter" type="button" class="btn btn-info"><i class="fa fa-twitter"></i> <span>Twitter</span></a>
-        <a id="connectFacebook" href="connect/facebook" type="button" class="btn btn-info"><i class="fa fa-facebook"></i> <span>Facebook</span></a>
-        <a href="logout" class="btn btn-danger"><i class="fa fa-close"></i> Log out</a>
-    </p>
-    <p>
-        <a id="disconnectGoogle" href="disconnect/google" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><i class="fa fa-google"></i> <span>Unlink</span></a>
-        <a id="disconnectGithub" href="disconnect/github" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><i class="fa fa-github"></i> <span>Unlink</span></a>
-        <a id="disconnectTwitter" href="disconnect/twitter" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><i class="fa fa-twitter"></i> <span>Unlink</span></a>
-        <a id="disconnectFacebook" href="disconnect/facebook" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><i class="fa fa-facebook"></i> <span>Unlink</span></a>
-    </p>
+    <a href="logout" class="float-xs-right">Log out</a>
+    <h1 class="display-3">Welcome!</h1>
+    <p class="lead">Monitor all associated accounts from here.</p>
   </div>
   <div class="container">
     <div class="card-columns">
+      <div class="card googleCard">
+        <div class="card-block">
+          <h4 class="card-title"><i class="fa fa-google"></i> Google</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <div class="card-block">
+          <p class="card-text"></p>
+          <a id="connectGoogle" href="connect/google" type="button" class="btn btn-sm btn-info"><span>Link</span></a>
+          <a id="disconnectGoogle" href="disconnect/google" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning disabled"><span>Unlink</span></a>
+        </div>
+      </div>
+      <div class="card githubCard">
+        <div class="card-block">
+          <h4 class="card-title"><i class="fa fa-github"></i> Github</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <div class="card-block">
+          <p class="card-text"></p>
+          <a id="connectGithub" href="connect/github" type="button" class="btn btn-sm btn-info"><span>Link</span></a>
+          <a id="disconnectGithub" href="disconnect/github" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><span>Unlink</span></a>
+        </div>
+      </div>
+      <div class="card facebookCard">
+        <div class="card-block">
+          <h4 class="card-title"><i class="fa fa-facebook"></i> Facebook</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <div class="card-block">
+          <p class="card-text"></p>
+          <a id="connectFacebook" href="connect/facebook" type="button" class="btn btn-sm btn-info"><span>Link</span></a>
+          <a id="disconnectFacebook" href="disconnect/facebook" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><span>Unlink</span></a>
+        </div>
+      </div>
+      <div class="card twitterCard">
+        <div class="card-block">
+          <h4 class="card-title"><i class="fa fa-twitter"></i> Twitter</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <div class="card-block">
+          <p class="card-text"></p>
+          <a id="connectTwitter" href="connect/twitter" type="button" class="btn btn-sm btn-info"><span>Link</span></a>
+          <a id="disconnectTwitter" href="disconnect/twitter" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><span>Unlink</span></a>
+        </div>
+      </div>
     </div>
   </div>
 

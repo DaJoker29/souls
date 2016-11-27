@@ -138,7 +138,7 @@ app.get('/disconnect/:provider', ensureAuth, (req, res) => {
   const provider = req.params.provider;
   debug(provider);
 
-  if (provider && {} !== provider) {
+  if (provider && {} !== provider && 'google' !== provider) {
     models.soul.findById(req.user.id, (err, soul) => {
       if (soul) {
         soul[provider] = undefined; // eslint-disable-line no-param-reassign
@@ -174,24 +174,6 @@ app.get('/connect/google/callback', passport.authorize('google', { failureRedire
 /**
  * Authentication Routes
  */
-
-app.get('/auth/github', passport.authenticate('github', githubParams));
-app.get('/auth/github/callback', passport.authenticate('github', { 
-  successRedirect: '/', 
-  failureRedirect: '/login',
-}));
-
-app.get('/auth/twitter', passport.authenticate('twitter'));
-app.get('/auth/twitter/callback', passport.authenticate('twitter', { 
-  successRedirect: '/', 
-  failureRedirect: '/login',
-}));
-
-app.get('/auth/facebook', passport.authenticate('facebook', facebookParams));
-app.get('/auth/facebook/callback', passport.authenticate('facebook', { 
-  successRedirect: '/', 
-  failureRedirect: '/login',
-}));
 
 app.get('/auth/google', passport.authenticate('google', googleParams));
 app.get('/auth/google/callback', passport.authenticate('google', { 
