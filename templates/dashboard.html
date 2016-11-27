@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Souls</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+</head>
+<body>
+  <!-- Start of content -->
+  <div class="container jumbotron clearfix">
+    <a href="logout" class="float-xs-right">Log out</a>
+    <span class="text-muted lastLogin float-xs-right pr-1"></span>
+    <h1 class="display-3">Welcome!</h1>
+    <p class="lead">Manage all linked accounts from here.</p>
+  </div>
+  <div class="container">
+    <div class="card-columns">
+      <div class="card googleCard">
+        <div class="card-block">
+          <h4 class="card-title"><i class="fa fa-google"></i> Google</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <img src="assets/shang.gif" alt="" class="img-fluid">
+        <div class="card-block">
+          <p class="card-text"></p>
+          <a id="connectGoogle" href="connect/google" type="button" class="btn btn-sm btn-info"><span>Link</span></a>
+          <a id="disconnectGoogle" href="disconnect/google" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning disabled"><span>Unlink</span></a>
+        </div>
+      </div>
+      <div class="card githubCard">
+        <div class="card-block">
+          <h4 class="card-title"><i class="fa fa-github"></i> Github</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <img src="assets/shang.gif" alt="" class="img-fluid">
+        <div class="card-block">
+          <p class="card-text"></p>
+          <a id="connectGithub" href="connect/github" type="button" class="btn btn-sm btn-info"><span>Link</span></a>
+          <a id="disconnectGithub" href="disconnect/github" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><span>Unlink</span></a>
+        </div>
+      </div>
+      <div class="card facebookCard">
+        <div class="card-block">
+          <h4 class="card-title"><i class="fa fa-facebook"></i> Facebook</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <img src="assets/shang.gif" alt="" class="img-fluid">
+        <div class="card-block">
+          <p class="card-text"></p>
+          <a id="connectFacebook" href="connect/facebook" type="button" class="btn btn-sm btn-info"><span>Link</span></a>
+          <a id="disconnectFacebook" href="disconnect/facebook" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><span>Unlink</span></a>
+        </div>
+      </div>
+      <div class="card twitterCard">
+        <div class="card-block">
+          <h4 class="card-title"><i class="fa fa-twitter"></i> Twitter</h4>
+          <h6 class="card-subtitle text-muted"></h6>
+        </div>
+        <img src="assets/shang.gif" alt="" class="img-fluid">
+        <div class="card-block">
+          <p class="card-text"></p>
+          <a id="connectTwitter" href="connect/twitter" type="button" class="btn btn-sm btn-info"><span>Link</span></a>
+          <a id="disconnectTwitter" href="disconnect/twitter" type="button" class="hidden-xs-up btn btn-sm btn-outline-warning"><span>Unlink</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- End of Content -->
+
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/js/tether.min.js" integrity="sha384-XTs3FgkjiBgo8qjEjBk0tGmf3wPrWtA6coPfQDfFEY8AnYJwjalXCiosYRBIBZX8" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js" integrity="sha256-Q1iNs8Pv5aDBQqByxUM4pQmdzbPFyNooDFJKojYnVpg=" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
+</body>
+</html>

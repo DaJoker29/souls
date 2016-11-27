@@ -1,0 +1,19 @@
+{
+  "verbose": true,
+  "env": {
+    "NODE_ENV": "development",
+    "DEBUG": "souls",
+    "GITHUB_CLIENT_ID": "",
+    "GITHUB_CLIENT_SECRET": "",
+    "GOOGLE_CLIENT_ID": "",
+    "GOOGLE_CLIENT_SECRET": "",
+    "TWITTER_CONSUMER_KEY": "",
+    "TWITTER_CONSUMER_SECRET": "",
+    "FACEBOOK_APP_ID": "",
+    "FACEBOOK_APP_SECRET": ""
+  },
+  "ext": "js json",
+  "ignore": [
+    "test"
+  ]
+}
