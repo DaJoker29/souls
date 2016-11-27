@@ -84,6 +84,7 @@ mongoose.Promise = global.Promise;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(morgan('development' === env ? 'dev' : 'combined'));
 app.use(helmet());
 app.use(session({
@@ -174,6 +175,24 @@ app.get('/connect/google/callback', passport.authorize('google', { failureRedire
 /**
  * Authentication Routes
  */
+
+app.get('/auth/github', passport.authenticate('github', githubParams));
+app.get('/auth/github/callback', passport.authenticate('github', { 
+  successRedirect: '/', 
+  failureRedirect: '/login',
+}));
+
+app.get('/auth/twitter', passport.authenticate('twitter'));
+app.get('/auth/twitter/callback', passport.authenticate('twitter', { 
+  successRedirect: '/', 
+  failureRedirect: '/login',
+}));
+
+app.get('/auth/facebook', passport.authenticate('facebook', facebookParams));
+app.get('/auth/facebook/callback', passport.authenticate('facebook', { 
+  successRedirect: '/', 
+  failureRedirect: '/login',
+}));
 
 app.get('/auth/google', passport.authenticate('google', googleParams));
 app.get('/auth/google/callback', passport.authenticate('google', { 

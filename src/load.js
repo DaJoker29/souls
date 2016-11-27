@@ -4,6 +4,8 @@ $(() => {
     const user = data;
     const { github, google, facebook, twitter } = user;
 
+    $('.lastLogin').text(`Last login ${moment(user.lastLogin).fromNow()}`);
+
     if (github) {
       $('#connectGithub')
         .addClass('btn-success')
@@ -15,7 +17,7 @@ $(() => {
         .removeClass('hidden-xs-up');
 
       $('.githubCard .card-subtitle')
-        .text(`Last updated ${moment(github.lastUpdated).fromNow()}`);
+        .text(`Last updated ${moment(github.lastUpdated).fromNow()}.`);
 
       $('.githubCard .card-text')
         .append(`<span><a href="${github.profileUrl}"><b>${github.username}</b></a></span><br />`)
