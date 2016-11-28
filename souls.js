@@ -135,6 +135,20 @@ app.get('/profile', ensureAuth, (req, res) => {
   res.json(req.user);
 });
 
+app.post('/api/users', confirmToken, (req, res) => {
+  const query = req.body.query || {};
+  const projection = req.body.projection || null;
+  const options = req.body.options || {};
+
+  models.soul.find(query, projection, options, (err, users) => {
+    if (err) {
+      console.log(err);
+    }
+
+    res.json(users);
+  });
+});
+
 app.get('/disconnect/:provider', ensureAuth, (req, res) => {
   const provider = req.params.provider;
   debug(provider);
@@ -281,5 +295,37 @@ function ensureAuth(req, res, next) {
     next();
   } else {
     res.redirect('/login');
+  }
+}
+
+function confirmToken(req, res, next) {
+  console.log('Confirming access token...');
+  validToken(req.body.auth, (err) => {
+    if (err) {
+      console.log('Token invalid...');
+      res.sendStatus(403);      
+    } else {
+      console.log('Token confirmed...');
+      next();      
+    }
+  });
+}
+
+function validToken(auth, callback) {
+  /**
+   * Auth requires appName and token properties for authentication
+   */
+  if (auth && auth.appName && auth.token) {
+    models.app.findOne(auth, (err, data) => {
+      if (err) {
+        callback(err);
+      } else if (data) {
+        callback(null);
+      } else {
+        callback(new Error('invalid credentials'));
+      }
+    });
+  } else {
+    callback(new Error('no authentication credentials provided.'));
   }
 }
