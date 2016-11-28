@@ -135,7 +135,7 @@ app.get('/profile', ensureAuth, (req, res) => {
   res.json(req.user);
 });
 
-app.post('api/users', confirmToken, (req, res) => {
+app.post('/api/users', confirmToken, (req, res) => {
   const query = req.body.query || {};
   const projection = req.body.projection || null;
   const options = req.body.options || {};
@@ -312,7 +312,10 @@ function confirmToken(req, res, next) {
 }
 
 function validToken(auth, callback) {
-  if (auth) {
+  /**
+   * Auth requires appName and token properties for authentication
+   */
+  if (auth && auth.appName && auth.token) {
     models.app.findOne(auth, (err, data) => {
       if (err) {
         callback(err);
