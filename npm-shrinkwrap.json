@@ -480,7 +480,7 @@
     },
     "commander": {
       "version": "2.9.0",
-      "from": "commander@>=2.8.1 <3.0.0",
+      "from": "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz",
       "resolved": "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz"
     },
     "concat-map": {
@@ -1534,6 +1534,16 @@
       "from": "lodash.defaults@>=3.1.2 <4.0.0",
       "resolved": "https://registry.npmjs.org/lodash.defaults/-/lodash.defaults-3.1.2.tgz"
     },
+    "lodash.foreach": {
+      "version": "4.5.0",
+      "from": "lodash.foreach@>=4.1.0 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.foreach/-/lodash.foreach-4.5.0.tgz"
+    },
+    "lodash.get": {
+      "version": "4.4.2",
+      "from": "lodash.get@>=4.0.2 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash.get/-/lodash.get-4.4.2.tgz"
+    },
     "lodash.isarguments": {
       "version": "3.1.0",
       "from": "lodash.isarguments@>=3.0.0 <4.0.0",
@@ -1667,6 +1677,11 @@
       "version": "0.1.2",
       "from": "mongoose-findorcreate@latest",
       "resolved": "https://registry.npmjs.org/mongoose-findorcreate/-/mongoose-findorcreate-0.1.2.tgz"
+    },
+    "mongoose-unique-validator": {
+      "version": "1.0.3",
+      "from": "mongoose-unique-validator@latest",
+      "resolved": "https://registry.npmjs.org/mongoose-unique-validator/-/mongoose-unique-validator-1.0.3.tgz"
     },
     "morgan": {
       "version": "1.7.0",

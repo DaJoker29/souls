@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 const token = require('rand-token');
 const findOrCreate = require('mongoose-findorcreate');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const Schema = mongoose.Schema;
+
+const appSchema = new Schema({
+  appName: { type: String, required: true, index: true, unique: true, trim: true },
+  token: { type: String, required: true, default: () => token.generate(64) },
+});
 
 const soulSchema = new Schema({
   displayName: { type: String, required: true, default: `soul-${token.generate(6, '0123456789')}` },
@@ -17,5 +23,7 @@ const soulSchema = new Schema({
 });
 
 soulSchema.plugin(findOrCreate);
+appSchema.plugin(uniqueValidator);
 
-exports.soul = mongoose.model('soul', soulSchema);
+module.exports.soul = mongoose.model('soul', soulSchema);
+module.exports.app = mongoose.model('App', appSchema);
