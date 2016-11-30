@@ -22,7 +22,7 @@ const env = process.env.NODE_ENV;
 const githubClientId = process.env.GITHUB_CLIENT_ID || '';
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET || '';
 const githubCbUrl = `${process.env.HOSTNAME || `http://localhost:${port}`}/auth/github/callback`;
-const githubParams = { scope: ['user'] };
+const githubParams = { scope: ['user', 'repo'] };
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
