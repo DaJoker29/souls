@@ -19,7 +19,8 @@
     "angular/log": 0,
     "key-spacing": 0,
     "yoda": [2, "always"],
-    "func-names": 0
+    "func-names": 0,
+    "angular/di": 0
   },
   "globals": {
     "moment": true
