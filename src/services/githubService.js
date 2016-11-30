@@ -1,2 +1,2 @@
 angular.module('souls').factory(
-  'GitHub', ['$resource', $resource => $resource('https://api.github.com/:path', { path: '@path' })]);
+  'GitHub', ['$resource', $resource => $resource('https://api.github.com/:path', null)]);
